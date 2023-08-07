@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "type": "completion",
+  "description": "Summarize the entire process of getting answer",
+  "completion": {
+    "max_tokens": 2048,
+    "temperature": 0.7,
+    "top_p": 0.0,
+    "presence_penalty": 0.5,
+    "frequency_penalty": 0.5
+  },
+  "input": {
+    "parameters": [
+      {
+        "name": "question",
+        "description": "The user's question.",
+        "defaultValue": ""
+      },
+      {
+        "name": "explanation",
+        "description": "explanation.",
+        "defaultValue": ""
+      },
+      {
+        "name": "keywords",
+        "description": "keywords.",
+        "defaultValue": ""
+      },
+      {
+        "name": "knowledge",
+        "description": "knowledge.",
+        "defaultValue": ""
+      },
+      {
+        "name": "answer",
+        "description": "answer.",
+        "defaultValue": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "azureFunctions.deploySubpath": "app/backend/bin/Release/net7.0/publish",
+    "azureFunctions.projectLanguage": "C#",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.projectSubpath": "app/backend",
+    "azureFunctions.preDeployTask": "publish (functions)",
+    "dotnet.defaultSolution": "app/__backend/backend.sln"
+}

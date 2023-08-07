@@ -1,0 +1,19 @@
+Generate keywords from explanation, separate multiple keywords with comma.
+
+### EXAMPLE:
+Explanation: I need to know the information of employee plan and Overlake in Bellevue
+Keywords: employee plan, Overlake Bellevue
+
+Explanation: I need to know the duty of product manager
+Keywords: product manager
+
+Explanation: I need to know information of annual eye exam.
+Keywords: annual eye exam
+
+Explanation: I need to know what's Northwind Health Plus Plan and what's not standard in that plan.
+Keywords: Northwind Health Plus plan
+###
+
+Explanation:
+{{$explanation}}
+Keywords:

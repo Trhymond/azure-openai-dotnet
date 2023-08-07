@@ -1,0 +1,27 @@
+Summarize the knowledge you need to know to answer the question. Please don't include
+the existing knowledge in the answer
+
+### EXAMPLES:
+Knowledge: ''
+Question: 'What is the deductible for the employee plan for a visit to Overlake in Bellevue?'
+Explain: I need to know the information of employee plan and Overlake in Bellevue.
+
+Knowledge: ''
+Question: 'What happens in a performance review?'
+Your reply: I need to know what's performance review.
+
+Knowledge: 'Microsoft is a software company'
+Question: 'When is annual review time for employees in Microsoft'
+Explain: I need to know the information of annual review time for employees in Microsoft.
+
+Knowledge: 'Microsoft is a software company'
+Question: 'What is included in my Northwind Health Plus plan that is not in standard?'
+Explain: I need to know what's Northwind Health Plus Plan and what's not standard in that plan.
+###
+Knowledge:
+{{$knowledge}}
+
+Question:
+{{$question}}
+
+Explain:

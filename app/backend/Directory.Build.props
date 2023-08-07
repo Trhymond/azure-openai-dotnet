@@ -1,0 +1,10 @@
+<Project>
+
+  <PropertyGroup>
+    <AzureIdentityVersion>1.9.0</AzureIdentityVersion>
+    <AzureSearchDocumentsVersion>11.5.0-beta.3</AzureSearchDocumentsVersion>
+    <AzureStorageBlobsVersion>12.17.0</AzureStorageBlobsVersion>
+  </PropertyGroup>
+
+</Project>
+

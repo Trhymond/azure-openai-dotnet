@@ -1,0 +1,26 @@
+{
+    "schema": 1,
+    "type": "completion",
+    "description": "Explain.",
+    "completion": {
+         "max_tokens": 500,
+         "temperature": 0.5,
+         "top_p": 0.0,
+         "presence_penalty": 0.5,
+         "frequency_penalty": 0.5
+    },
+    "input": {
+         "parameters": [
+              {
+                "name": "knowledge",
+                "description": "knowledge.",
+                "defaultValue": ""
+              },
+              {
+                "name": "quewstion",
+                "description": "The user's question.",
+                "defaultValue": ""
+              }
+         ]
+    }
+}
