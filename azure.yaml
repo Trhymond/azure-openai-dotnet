@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: azure-openai-poc
+name: azure-openai-dotnet
 metadata:
-  template: azure-openai-poc@0.0.1
+  template: azure-openai-dotnet@0.0.1
 infra:
   provider: bicep
   path: infra
@@ -46,10 +46,17 @@ services:
         run: ../../scripts/appconfig.sh
 
 hooks:
+  preprovision:
+    posix:
+      shell: sh
+      run: cd app/prepdocs && dotnet build
+      interactive: true
+      continueOnError: false
+
   postprovision:
     posix:
       shell: sh
-      run: ./scripts/prepdocs.sh
+      run: ./scripts/prepdoc.sh
       interactive: true
       continueOnError: false
 

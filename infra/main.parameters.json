@@ -1,111 +1,115 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "environmentName": {
-        "value": "${AZURE_ENV_NAME}"
-      },
-      "location": {
-        "value": "${AZURE_LOCATION}"
-      },
-      "namePrefix": {
-        "value": "${AZURE_NAME_PREFIX}"
-      },
-      "tags" : {
-        "value": {
-           "owner": "Tomy Rhymond",
-           "delete": false,
-           "environment": "dev",
-           "application": "openai-search poc",
-           "market": "cmh"
-        }
-      },
-      "servicePrincipalObjectId": {
-        "value": "${AZURE_SERVICEPRINCIPAL_OBJECTID}"
-      },
-      "resourceGroupName": {
-        "value": "${AZURE_RESOURCE_GROUP}"
-      },
-      "storageAccountName": {
-        "value": "${AZURE_STORAGE_ACCOUNT}"
-      },
-      "storageAccessTier": {
-        "value": "Hot"
-      },
-      "storageSkuName": {
-        "value": "Standard_LRS"
-      },
-      "storageContainerName": {
-        "value": "content"
-      },
-      "keyVaultName": {
-        "value": "${AZURE_KEY_VAULT}"
-      },
-      "keyvaultSkuName": {
-        "value": "standard"
-      },
-      "logAnalyticsWorkspaceName": {
-        "value": "${AZURE_LOG_ANALYTICS_WORKSPACE}"
-      },    
-      "logAnalyticsSkuName": {
-        "value": "PerGB2018"
-      }, 
-      "appinsightsName": {
-        "value": "${AZURE_APPINSIGHTS}"
-      },
-      "searchServiceName":{
-        "value": "${AZURE_SEARCH_SERVICE}"
-      },
-      "searchServiceSkuName": {
-        "value": "standard"
-      }, 
-      "searchIndexName": {
-        "value": "gptkbindex"
-      }, 
-      "formRecognizerServiceName": {
-        "value": "${AZURE_FORM_RECOGNIZER_SERVICE}"
-      },
-      "formRecognizerSkuName": {
-        "value": "S0"
-      },
-      "openAiServiceName": {
-        "value": "${AZURE_OPENAI_SERVICE}"
-      },   
-      "openAiSkuName": {
-        "value": "S0"
-      },
-      "gptDeploymentName": {
-        "value": "${AZURE_OPENAI_GPT_DEPLOYMENT}"
-      },
-      "gptDeploymentCapacity": {
-        "value": 30
-      },
-      "gptModelName": {
-        "value": "gpt-35-turbo" //"text-embedding-ada-002"
-      },
-      "chatGptDeploymentName": {
-        "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT}"
-      },
-      "chatGptDeploymentCapacity": {
-        "value": 30
-      },
-      "chatGptModelName": {
-        "value": "gpt-35-turbo"
-      },
-      "cosmosAccountName": {
-        "value": "${AZURE_COSMOS_ACCOUNT}"
-      },
-      "cosmosDbName": {
-        "value": "${COSMOS_DATABASE}"
-      },      
-      "functionAppName": {
-        "value": "${AZURE_FUNCTION_APP}"
-      },
-      "appServicePlanName":{
-        "value": "${AZURE_APP_SERVICE_PLAN}"
-      },
-      "appServiceName":{
-        "value": "${AZURE_APP_SERVICE}"
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "namePrefix": {
+      "value": "${AZURE_NAME_PREFIX}"
+    },
+    "tags": {
+      "value": {
+        "owner": "Tomy Rhymond",
+        "delete": false,
+        "environment": "dev",
+        "application": "openai-search poc",
+        "market": "cmh"
       }
+    },
+    "servicePrincipalObjectId": {
+      "value": "${AZURE_SERVICEPRINCIPAL_OBJECTID}"
+    },
+    "resourceGroupName": {
+      "value": "${AZURE_RESOURCE_GROUP}"
+    },
+    "storageAccountName": {
+      "value": "${AZURE_STORAGE_ACCOUNT}"
+    },
+    "storageAccessTier": {
+      "value": "Hot"
+    },
+    "storageSkuName": {
+      "value": "Standard_LRS"
+    },
+    "storageContainerName": {
+      "value": "content"
+    },
+    "keyVaultName": {
+      "value": "${AZURE_KEY_VAULT}"
+    },
+    "keyvaultSkuName": {
+      "value": "standard"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "${AZURE_LOG_ANALYTICS_WORKSPACE}"
+    },
+    "logAnalyticsSkuName": {
+      "value": "PerGB2018"
+    },
+    "appinsightsName": {
+      "value": "${AZURE_APPINSIGHTS}"
+    },
+    "searchServiceName": {
+      "value": "${AZURE_SEARCH_SERVICE}"
+    },
+    "searchServiceSkuName": {
+      "value": "standard"
+    },
+    "searchIndexName": {
+      "value": "gptkbindex"
+    },
+    "formRecognizerServiceName": {
+      "value": "${AZURE_FORM_RECOGNIZER_SERVICE}"
+    },
+    "formRecognizerSkuName": {
+      "value": "S0"
+    },
+    "openAiServiceName": {
+      "value": "${AZURE_OPENAI_SERVICE}"
+    },
+    "openAiSkuName": {
+      "value": "S0"
+    },
+    "gptDeploymentName": {
+      "value": "chat"
+    },
+    "gptEmbeddingDeploymentName": {
+      "value": "embeddings"
+    },
+    "gptModelDeployments": {
+      "value": [
+        {
+          "name": "chat",
+          "modelName": "gpt-35-turbo",
+          "version": "0301",
+          "capacity": 30
+        },
+        {
+          "name": "embeddings",
+          "modelName": "text-embedding-ada-002",
+          "version": "2",
+          "capacity": 30
+        }
+      ]
+    },
+    "cosmosAccountName": {
+      "value": "${AZURE_COSMOS_ACCOUNT}"
+    },
+    "cosmosDbName": {
+      "value": "${COSMOS_DATABASE}"
+    },
+    "functionAppName": {
+      "value": "${AZURE_FUNCTION_APP}"
+    },
+    "appServicePlanName": {
+      "value": "${AZURE_APP_SERVICE_PLAN}"
+    },
+    "appServiceName": {
+      "value": "${AZURE_APP_SERVICE}"
     }
+  }
 }

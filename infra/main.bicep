@@ -69,23 +69,11 @@ param openAiServiceName string
 @description('The openapi service sku name')
 param openAiSkuName string = 'S0'
 
+param gptDeploymentName string = 'chat'
+param gptEmbeddingDeploymentName string = 'embedding'
+
 @description('The openapi GPT deployment name')
-param gptDeploymentName string = 'davinci'
-
-@description('The openapi GPT deployment capacity')
-param gptDeploymentCapacity int
-
-@description('The openapi GPR model name')
-param gptModelName string
-
-@description('The openapi chatGPT deployment name')
-param chatGptDeploymentName string = 'chat'
-
-@description('The openapi chatGPT deployment capcity')
-param chatGptDeploymentCapacity int
-
-@description('The openapi chatGPT model name')
-param chatGptModelName string
+param gptModelDeployments array = []
 
 @description('The cosmos db account name')
 param cosmosAccountName string
@@ -227,32 +215,18 @@ module openAi 'core/ai/cognitive-services.bicep' = {
     skuName: openAiSkuName
     kind: 'OpenAI'
 
-    deployments: [
-      {
-        name: gptDeploymentName
-        model: {
-          format: 'OpenAI'
-          name: gptModelName
-          version: '2'
-        }
-        sku: {
-          name: 'Standard'
-          capacity: gptDeploymentCapacity
-        }
+    deployments: [for deployment in gptModelDeployments: {
+      name: deployment.name
+      model: {
+        format: 'OpenAI'
+        name: deployment.modelName
+        version: deployment.version
       }
-      {
-        name: chatGptDeploymentName
-        model: {
-          format: 'OpenAI'
-          name: chatGptModelName
-          version: '0301'
-        }
-        sku: {
-          name: 'Standard'
-          capacity: chatGptDeploymentCapacity
-        }
+      sku: {
+        name: 'Standard'
+        capacity: deployment.capacity
       }
-    ]
+    }]
   }
 }
 
@@ -281,8 +255,8 @@ module backend 'core/host/funcApp.bicep' = {
     name: functionAppNameVar
     location: location
     tags: tags
-    kind: 'linux'
-    runtimeName: 'dotnetcore'
+    kind: 'functionapp,linux'
+    runtimeName: 'dotnet-isolated'
     runtimeVersion: '7.0'
     applicationInsightsName: appInsights.outputs.name
     keyVaultName: keyvault.outputs.name
@@ -316,8 +290,8 @@ module backend 'core/host/funcApp.bicep' = {
         value: gptDeploymentName
       }
       {
-        name: 'AZURE_OPENAI_CHATGPT_DEPLOYMENT'
-        value: chatGptDeploymentName
+        name: 'AZURE_OPENAI_GPT_EMBEDDING_DEPLOYMENT'
+        value: gptEmbeddingDeploymentName
       }
       {
         name: 'AZURE_COSMOS_ENDPOINT'
@@ -542,7 +516,7 @@ output AZURE_SEARCH_SERVICE string = searchServiceNameVar
 output AZURE_FORM_RECOGNIZER_SERVICE string = formRecognizerServiceNameVar
 output AZURE_OPENAI_SERVICE string = openAiServiceNameVar
 output AZURE_OPENAI_GPT_DEPLOYMENT string = gptDeploymentName
-output AZURE_OPENAI_CHATGPT_DEPLOYMENT string = chatGptDeploymentName
+output AZURE_OPENAI_GPT_EMBEDDING_DEPLOYMENT string = gptEmbeddingDeploymentName
 output AZURE_COSMOS_ACCOUNT string = cosmosAccountNameVar
 output AZURE_FUNCTION_APP string = functionAppNameVar
 output AZURE_APP_SERVICE_PLAN string = appServicePlanNameVar

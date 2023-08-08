@@ -4,7 +4,7 @@ param name string
 param hostingPlanName string = ''
 param location string = resourceGroup().location
 param tags object
-param kind string = 'functionapp,linux' 
+param kind string = 'functionapp,linux'
 param applicationInsightsName string
 param keyVaultName string = ''
 param storageAccountName string
@@ -26,10 +26,10 @@ param minimumElasticInstanceCount int = 0
 // param healthCheckPath string = ''
 
 var hostingPlanNameVar = empty(hostingPlanName) ? replace(name, 'func-', 'func-plan-') : hostingPlanName
-var runtimeNameAndVersion = '${runtimeName}|${runtimeVersion}'
-var scmDoBuildDuringDeployment = contains(kind, 'linux') ? true : false 
-var enableOryxBuild = contains(kind, 'linux') ? true : false 
-var websiteRunFromPackage = contains(kind, 'linux') ? 0 : 1 
+var runtimeNameAndVersion = '${toUpper(runtimeName)}|${runtimeVersion}'
+var scmDoBuildDuringDeployment = contains(kind, 'linux') ? true : false
+var enableOryxBuild = contains(kind, 'linux') ? true : false
+var websiteRunFromPackage = contains(kind, 'linux') ? 0 : 1
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = if (!empty(storageAccountName)) {
   name: storageAccountName
@@ -54,7 +54,10 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
+    size: 'Y1'
+    family: 'Y'
   }
+
   properties: {
     reserved: true
     zoneRedundant: zoneRedundant
@@ -65,8 +68,9 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: name
   location: location
   tags: union(tags, { 'azd-service-name': serviceName })
-  kind: 'functionapp'
+  kind: kind
   properties: {
+    reserved: true
     serverFarmId: hostingPlan.id
 
     siteConfig: {
@@ -109,7 +113,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           }
           {
             name: 'FUNCTIONS_WORKER_RUNTIME'
-            value: runtimeName
+            value: toLower(runtimeName)
           }
           {
             name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
@@ -138,7 +142,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
         ])
     }
     httpsOnly: true
-    
+
     // clientAffinityEnabled: clientAffinityEnabled
   }
 
