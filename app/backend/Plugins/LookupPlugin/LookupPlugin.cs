@@ -1,6 +1,7 @@
 namespace Rhymond.OpenAI.Plugins;
 
-public sealed class LookupPlugin {
+public sealed class LookupPlugin
+{
 
     private readonly SearchClient _searchClient;
     private readonly RequestOverrides? _requestOverrides;
@@ -12,7 +13,7 @@ public sealed class LookupPlugin {
     }
 
     [SKFunction, Description("Query Azure Cognitive Search")]
-    public async Task<string> LookupAsync(string searchQuery, SKContext context)
+    public async Task<string> LookupAsync(string lookupQuery, SKContext context)
     {
         if (lookupQuery is string query)
         {
