@@ -27,6 +27,7 @@ global using Microsoft.SemanticKernel.Planning;
 global using Microsoft.SemanticKernel.Planning.Sequential;
 global using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Configuration;
 global using Rhymond.OpenAI;
 global using Rhymond.OpenAI.Plugins;
 global using Rhymond.OpenAI.Models;

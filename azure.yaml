@@ -37,13 +37,13 @@ services:
       predeploy:
         posix:
           shell: sh
-          run: ../frontend_env.sh ${BACKEND_URI} ${BACKEND_KEY}
+          run: ../../scripts/frontend_env.sh ${BACKEND_URI} ${BACKEND_KEY}
           interactive: true
           continueOnError: false
 
       postdeploy:
         shell: sh
-        run: ../../scripts/appconfig.sh
+        run: ../../scripts/app_config.sh
 
 hooks:
   preprovision:

@@ -1,12 +1,16 @@
 
 
 [assembly: FunctionsStartup(typeof(Rhymond.OpenAI.Startup))]
-namespace Rhymond.OpenAI {
+namespace Rhymond.OpenAI
+{
     public class Startup : FunctionsStartup
     {
-        public override void Configure(IFunctionsHostBuilder builder) {
-            // builder.Services.AddAzureServices();
-            // builder.Services.AddMemoryStore();
+        public override void Configure(IFunctionsHostBuilder builder)
+        {
+            builder.Services.AddLogging();
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddAzureServices();
+            builder.Services.AddMemoryStore();
         }
     }
 }

@@ -4,7 +4,6 @@ param location string = resourceGroup().location
 param tags object = {}
 
 param containers array = []
-param keyVaultName string
 param principalIds array = []
 
 var containerList = [for item in containers: item.name]
@@ -15,7 +14,6 @@ module cosmos 'cosmos-sql-account.bicep' = {
     name: accountName
     location: location
     tags: tags
-    keyVaultName: keyVaultName
   }
 }
 
@@ -69,7 +67,6 @@ module userRole 'cosmos-sql-role-assign.bicep' = [for principalId in principalId
 
 output accountId string = cosmos.outputs.id
 output accountName string = cosmos.outputs.name
-output connectionStringKey string = cosmos.outputs.connectionStringKey
 output databaseName string = databaseName
 output endpoint string = cosmos.outputs.endpoint
 output roleDefinitionId string = roleDefintion.outputs.id

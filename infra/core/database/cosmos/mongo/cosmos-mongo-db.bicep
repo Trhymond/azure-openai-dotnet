@@ -4,17 +4,13 @@ param location string = resourceGroup().location
 param tags object = {}
 
 param collections array = []
-param connectionStringKey string = 'AZURE-COSMOS-CONNECTION-STRING'
-param keyVaultName string
 
 module cosmos 'cosmos-mongo-account.bicep' = {
   name: 'cosmos-mongo-account'
   params: {
     name: accountName
     location: location
-    keyVaultName: keyVaultName
     tags: tags
-    connectionStringKey: connectionStringKey
   }
 }
 
@@ -41,6 +37,5 @@ resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2022-0
   ]
 }
 
-output connectionStringKey string = connectionStringKey
 output databaseName string = databaseName
 output endpoint string = cosmos.outputs.endpoint

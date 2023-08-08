@@ -19,10 +19,7 @@ public sealed class ReadRetrieveReadChatService
         _logger = loggerFactory.CreateLogger<ReadRetrieveReadChatService>();
         _searchClient = searchClient;
 
-        _kernel  = SemanticKernelFactory.GetKernel<ReadRetrieveReadChatService>(_logger, CompletionTypes.Chat, memoryStore);
-        // var builder = new KernelBuilder();
-        // builder.WithAzureChatCompletionService(AppSettings.AzureOpenAiChatGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, AppSettings.AzureOpenAiKey);
-        // _kernel = builder.Build();
+        _kernel = SemanticKernelFactory.GetKernel<ReadRetrieveReadChatService>(_logger, CompletionTypes.Chat, memoryStore);
 
         _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "..", "..", "plugins");
     }
@@ -38,21 +35,24 @@ public sealed class ReadRetrieveReadChatService
 
         var context = _kernel.CreateNewContext(cancellationToken);
         context["chat_history"] = history.GetChatHistoryAsText(includeLastTurn: true);
-        context["question"] = (history.LastOrDefault()?.User is { } userQuestion) 
-        ? userQuestion 
+        context["question"] = (history.LastOrDefault()?.User is { } userQuestion)
+        ? userQuestion
         : throw new InvalidOperationException("User question is null");
-        
+
         context["follow_up_questions_prompt"] = (overrides?.SuggestFollowupQuestions is true) ? FollowUpQuestionsPrompt : string.Empty;
 
         var prompt = "";
-        if (overrides is null or { PromptTemplate: null }) {
-            context["injected_prompt"] =  string.Empty;
+        if (overrides is null or { PromptTemplate: null })
+        {
+            context["injected_prompt"] = string.Empty;
             prompt = FollowUpQuestionsPrompt;
         }
-        else if (overrides is not null && overrides.PromptTemplate.StartsWith(">>>")) {
+        else if (overrides is not null && overrides.PromptTemplate.StartsWith(">>>"))
+        {
             context["injected_prompt"] = overrides.PromptTemplate[3..];
-        } 
-        else if (overrides?.PromptTemplate is string promptTemplate) {
+        }
+        else if (overrides?.PromptTemplate is string promptTemplate)
+        {
             context["injected_prompt"] = promptTemplate;
             prompt = promptTemplate;
         }

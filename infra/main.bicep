@@ -69,7 +69,10 @@ param openAiServiceName string
 @description('The openapi service sku name')
 param openAiSkuName string = 'S0'
 
+@description('The openapi gpt deployment name')
 param gptDeploymentName string = 'chat'
+
+@description('The openapi gpt embeddings deployment name')
 param gptEmbeddingDeploymentName string = 'embedding'
 
 @description('The openapi GPT deployment name')
@@ -243,7 +246,6 @@ module database 'core/database/cosmos/sql/cosmos-sql-db.bicep' = {
         name: 'employee_plans'
         partitionKey: '/plan'
       } ]
-    keyVaultName: keyvault.outputs.name
     principalIds: [ servicePrincipalObjectId ]
   }
 }
@@ -266,36 +268,8 @@ module backend 'core/host/funcApp.bicep' = {
     // allowedOrigins: [ frontend.outputs.uri ]
     appSettings: [
       {
-        name: 'AZURE_STORAGE_ACCOUNT'
-        value: storage.outputs.name
-      }
-      {
-        name: 'AZURE_STORAGE_CONTAINER'
-        value: storageContainerName
-      }
-      {
-        name: 'AZURE_SEARCH_INDEX'
-        value: searchIndexName
-      }
-      {
-        name: 'AZURE_SEARCH_SERVICE'
-        value: search.outputs.name
-      }
-      {
-        name: 'AZURE_OPENAI_SERVICE'
-        value: openAi.outputs.name
-      }
-      {
-        name: 'AZURE_OPENAI_GPT_DEPLOYMENT'
-        value: gptDeploymentName
-      }
-      {
-        name: 'AZURE_OPENAI_GPT_EMBEDDING_DEPLOYMENT'
-        value: gptEmbeddingDeploymentName
-      }
-      {
-        name: 'AZURE_COSMOS_ENDPOINT'
-        value: database.outputs.endpoint
+        name: 'AZURE_KEYVAULT_ENDPOINT'
+        value: keyvault.outputs.endpoint
       }
     ]
   }
@@ -303,9 +277,6 @@ module backend 'core/host/funcApp.bicep' = {
     storage
     keyvault
     appInsights
-    database
-    openAi
-    search
   ]
 }
 
@@ -333,7 +304,6 @@ module frontend 'core/host/appservice.bicep' = {
     location: location
     tags: union(tags, { 'azd-service-name': 'frontend' })
     appServicePlanId: appServicePlan.outputs.id
-    // keyVaultName: keyvault.outputs.name
     applicationInsightsName: appInsights.outputs.name
     runtimeName: 'NODE'
     runtimeVersion: '18-lts'
@@ -356,6 +326,89 @@ module frontend 'core/host/appservice.bicep' = {
 }
 
 // Security
+
+module keyVaultSecret 'core/keyvault/keyvault-secrets.bicep' = {
+  name: 'keyvault-secret-module'
+  scope: resourceGroup
+  params: {
+    keyvaultName: keyvault.outputs.name
+    tags: tags
+    secrets: [
+      {
+        name: 'AzureStorageAccountEndpoint'
+        value: storage.outputs.primaryEndpoints.blob
+        contentType: 'Storage account endpoint'
+      }
+      {
+        name: 'AzureStorageContainer'
+        value: storageContainerName
+        contentType: 'Storage container'
+      }
+      {
+        name: 'AzureSearchServiceEndpoint'
+        value: search.outputs.endpoint
+        contentType: 'Cognitive Search endpoint'
+      }
+      {
+        name: 'AzureSearchIndex'
+        value: searchIndexName
+        contentType: 'Cognitive Search index'
+      }
+      {
+        name: 'AzureOpenAiServiceEndpoint'
+        value: openAi.outputs.endpoint
+        contentType: 'Azure OpenAI Service endpoint'
+      }
+      {
+        name: 'AzureOpenAiGptDeployment'
+        value: gptDeploymentName
+        contentType: 'Azure OpenAI GPT deployment name'
+      }
+      {
+        name: 'AzureOpenAiEmbeddingDeployment'
+        value: gptEmbeddingDeploymentName
+        contentType: 'Azure OpenAI GPT embedding deployment name'
+      }
+      {
+        name: 'AzureCosmosEndpoint'
+        value: database.outputs.endpoint
+        contentType: 'Cosmos Sql Account endpoint'
+      }
+      {
+        name: 'AzureFormRecognizerServiceEndpoint'
+        value: formRecognizer.outputs.endpoint
+        contentType: 'Azure Form Recognozer Service endpoint'
+      }
+    ]
+  }
+
+  dependsOn: [
+    keyvault
+    database
+    search
+    openAi
+    storage
+    formRecognizer
+  ]
+}
+
+module keyVaultAccessPolicies 'core/keyvault/keyvault-access.bicep' = {
+  name: 'keyvault-accesspolicies-module'
+  scope: resourceGroup
+
+  params: {
+    keyvaultName: keyvault.outputs.name
+    principalId: backend.outputs.identityPrincipalId
+    permissions: {
+      secrets: [ 'get', 'list' ]
+    }
+  }
+
+  dependsOn: [
+    keyvault
+    backend
+  ]
+}
 
 // Storage Blob Data Reader
 module storageRoleUser 'core/security/role-assignment.bicep' = {
