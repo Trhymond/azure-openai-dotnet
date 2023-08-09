@@ -1,9 +1,8 @@
 {
-    "dotnet.defaultSolution": "backend.sln",
+    "azureAutomation.directory.basePath": "Users/tomy.rhymond/Projects/slalom-cmh/AutomationRunbooks",
     "azureFunctions.deploySubpath": "bin/Release/net7.0/publish",
     "azureFunctions.projectLanguage": "C#",
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",
-    "azureFunctions.preDeployTask": "publish (functions)",
-    "azureAutomation.directory.basePath": "Users/tomy.rhymond/Projects/slalom-cmh/AutomationRunbooks"
+    "azureFunctions.preDeployTask": "publish (functions)"
 }

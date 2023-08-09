@@ -271,6 +271,38 @@ module backend 'core/host/funcApp.bicep' = {
         name: 'AZURE_KEYVAULT_ENDPOINT'
         value: keyvault.outputs.endpoint
       }
+      {
+        name: 'AzureStorageAccountEndpoint'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureStorageAccountEndpoint)'
+      }
+      {
+        name: 'AzureStorageContainer'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureStorageContainer)'
+      }
+      {
+        name: 'AzureSearchServiceEndpoint'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureSearchServiceEndpoint)'
+      }
+      {
+        name: 'AzureSearchIndex'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureSearchIndex)'
+      }
+      {
+        name: 'AzureOpenAiServiceEndpoint'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureOpenAiServiceEndpoint)'
+      }
+      {
+        name: 'AzureOpenAiGptDeployment'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureOpenAiGptDeployment)'
+      }
+      {
+        name: 'AzureOpenAiEmbeddingDeployment'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureOpenAiEmbeddingDeployment)'
+      }
+      {
+        name: 'AzureCosmosEndpoint'
+        value: '@Microsoft.KeyVault(VaultName=${keyvault.outputs.name};SecretName=AzureCosmosEndpoint)'
+      }
     ]
   }
   dependsOn: [
@@ -547,6 +579,20 @@ module cosmosRoleBackend 'core/security/role-assignment.bicep' = {
   params: {
     principalId: backend.outputs.identityPrincipalId
     roleDefinitionId: 'fbdf93bf-df7d-467e-a4d2-9458aa1360c8'
+    principalType: 'ServicePrincipal'
+  }
+  dependsOn: [
+    backend
+  ]
+}
+
+// Cosmos DB Account Reader Role	
+module keyvaultRoleBackend 'core/security/role-assignment.bicep' = {
+  scope: resourceGroup
+  name: 'keyvault-role-backend'
+  params: {
+    principalId: backend.outputs.identityPrincipalId
+    roleDefinitionId: '21090545-7ca7-4776-b22c-e363652d74d2'
     principalType: 'ServicePrincipal'
   }
   dependsOn: [

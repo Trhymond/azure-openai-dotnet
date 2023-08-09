@@ -23,11 +23,12 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     enabledForDeployment: true
     enableSoftDelete: true
     tenantId: subscription().tenantId
-    networkAcls: {
-      bypass: 'AzureServices'
-      defaultAction: 'Deny'
-    }
-    publicNetworkAccess: 'Enabled'
+    // networkAcls: {
+    //   bypass: 'AzureServices'
+    //   defaultAction: 'Deny'
+    // }
+    publicNetworkAccess: 'enabled'
+    // enableRbacAuthorization: true
     accessPolicies: [
       {
         objectId: servicePrincipalObjectId
