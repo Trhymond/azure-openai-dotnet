@@ -14,8 +14,7 @@ public sealed class ApproachServiceResponseFactory
     internal async Task<ApproachResponse> GetApproachResponseAsync(
         Approach approach,
         string question,
-        RequestOverrides? overrides = null,
-        CancellationToken cancellationToken = default)
+        RequestOverrides? overrides = null)
     {
 
         var service =
@@ -26,10 +25,8 @@ public sealed class ApproachServiceResponseFactory
         var key = new CacheKey(approach, question, overrides)
              .ToCacheKeyString();
 
-        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-
-        var cachedValue = await _cache.GetStringAsync(key, cancellationToken);
-        if (cachedValue is { Length: > 0 } && JsonSerializer.Deserialize<ApproachResponse>(cachedValue, options) is ApproachResponse cachedResponse)
+        var cachedValue = await _cache.GetStringAsync(key);
+        if (cachedValue is { Length: > 0 } && JsonConvert.DeserializeObject<ApproachResponse>(cachedValue) is ApproachResponse cachedResponse)
         {
             _logger.LogDebug(
                 "Return cached value for key ({Key}): {Appproach}\n{Response}",
@@ -39,19 +36,19 @@ public sealed class ApproachServiceResponseFactory
         }
 
         var approachResponse =
-            await service.ReplyAsync(question, overrides, cancellationToken)
+            await service.ReplyAsync(question, overrides)
             ?? throw new AIException(
                 AIException.ErrorCodes.ServiceError,
                 $"The approach response for '{approach}' was null.");
 
 
-        var json = JsonSerializer.Serialize(approachResponse, options);
+        var json = JsonConvert.SerializeObject(approachResponse);
         var entryOptions = new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
         };
 
-        await _cache.SetStringAsync(key, json, entryOptions, cancellationToken);
+        await _cache.SetStringAsync(key, json, entryOptions);
         _logger.LogDebug(
             "Return cached value for key ({Key}): {Appproach}\n{Response}",
             key, approach, approachResponse);

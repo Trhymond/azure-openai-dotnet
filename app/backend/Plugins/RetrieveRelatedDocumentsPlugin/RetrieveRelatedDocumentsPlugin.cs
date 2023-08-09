@@ -1,7 +1,7 @@
-// namespace Rhymond.OpenAI.Plugins;
+namespace Rhymond.OpenAI.Plugins;
 
-public sealed class RetrieveRelatedDocumentsPlugin {
-
+public sealed class RetrieveRelatedDocumentsPlugin
+{
     private readonly SearchClient _searchClient;
     private readonly RequestOverrides? _requestOverrides;
 
@@ -11,7 +11,7 @@ public sealed class RetrieveRelatedDocumentsPlugin {
         _requestOverrides = requestOverrides;
     }
 
-    [SKFunction, Description("Query Azure Cognitive Search")]
+    [SKFunction,  Description("Query2 Azure Cognitive Search"), SKName("QueryAsync")]    
     public async Task<string> QueryAsync(string searchQuery)
     {
         if (searchQuery is string query)

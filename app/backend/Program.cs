@@ -5,7 +5,7 @@ var host = new HostBuilder()
     .ConfigureServices(s=> {
         s.AddApplicationInsightsTelemetryWorkerService();
         s.ConfigureFunctionsApplicationInsights();
-        s.AddSingleton<IHttpResponderService, DefaultHttpResponderService>();
+        //s.AddSingleton<IHttpResponderService, DefaultHttpResponderService>();
         s.Configure<LoggerFilterOptions>(options => {
             LoggerFilterRule? toRemove = options.Rules.FirstOrDefault(rule => rule?.ProviderName
                 == "Microsoft.Extensions.Logging.ApplicationInsigthsLoggerProvider");
@@ -17,7 +17,7 @@ var host = new HostBuilder()
         s.AddLogging();
         s.AddDistributedMemoryCache();
         s.AddAzureServices();
-        s.AddMemoryStore();
+        s.AddMemoryStore();        
     }).Build();
 
 

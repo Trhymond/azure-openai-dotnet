@@ -20,9 +20,9 @@ internal sealed class ReadDecomposeAskApproachService : IApproachBasedService
     {
         _logger = loggerFactory.CreateLogger<ReadDecomposeAskApproachService>();
         _searchClient = searchClient;
-        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "..", "..", "plugins");
+        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Plugins");
 
-        _kernel  = SemanticKernelFactory.GetKernel<ReadDecomposeAskApproachService>(_logger, CompletionTypes.Text); 
+        _kernel  = SemanticKernelFactory.GetKernel<ReadDecomposeAskApproachService>(_logger); 
         // var builder = new KernelBuilder();
         // builder.WithAzureTextCompletionService(AppSettings.AzureOpenAiGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, AppSettings.AzureOpenAiKey);
         // _kernel = builder.Build();

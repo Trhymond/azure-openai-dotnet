@@ -1,8 +1,13 @@
-﻿namespace Rhymond.OpenAI.Models;
+﻿using System.Runtime.Serialization;
 
-public enum Approach
+namespace Rhymond.OpenAI.Models;
+
+public enum Approach 
 {
+    [EnumMember(Value = "rtr")]
     RetrieveThenRead,
+    [EnumMember(Value = "rrr")]    
     ReadRetrieveRead,
+    [EnumMember(Value = "rda")]    
     ReadDecomposeAsk
 };

@@ -3,24 +3,24 @@
     "type": "completion",
     "description": "answer question",
     "completion": {
-         "max_tokens": 500,
-         "temperature": 0.5,
+         "max_tokens": 1024,
+         "temperature": 0.7,
          "top_p": 0.0,
          "presence_penalty": 0.5,
          "frequency_penalty": 0.5
     },
-    "input": {
-         "parameters": [
-              {
-                "name": "knowledge",
-                "description": "knowledge.",
-                "defaultValue": ""
-              },
-              {
-                "name": "quewstion",
-                "description": "The user's question.",
-                "defaultValue": ""
-              }
-         ]
-    }
+  "input": {
+    "parameters": [
+      {
+        "name": "question",
+        "description": "The user's question.",
+        "defaultValue": ""
+      },
+      {
+        "name": "knowledge",
+        "description": "knowledge gained",
+        "defaultValue": ""
+      }
+    ]
+  }
 }

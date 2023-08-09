@@ -31,6 +31,8 @@ if [ -z "$AZD_PREPDOCS_RAN" ] || [ "$AZD_PREPDOCS_RAN" = "false" ]; then
     echo 'Running "PrepareDocs.dll"'
 
     pwd
+    
+    dotnet build "app/prepdocs/prepdocs.csproj" 
 
     dotnet run --project "app/prepdocs/prepdocs.csproj" -- \
       './data/*.pdf' \

@@ -1,4 +1,6 @@
 
+using Rhymond.OpenAI.Extensions;
+
 namespace Rhymond.OpenAI.HttpTriggers
 {
     public class AskFunction
@@ -18,13 +20,12 @@ namespace Rhymond.OpenAI.HttpTriggers
         {
             _logger.LogInformation("OpenAI Ask function");
 
-            var cancellationToken = new CancellationToken();
-            var askRequest = await req.ReadFromJsonAsync<AskRequest>();
-            
+            var askRequest = req.ReadFromJson<AskRequest>();
+
             if (askRequest is { Question.Length: > 0 }) {
 
                 var approachResponse = await _factory.GetApproachResponseAsync(
-                    askRequest.Approach, askRequest.Question, askRequest.Overrides, cancellationToken);
+                    askRequest.Approach, askRequest.Question, askRequest.Overrides);
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 await response.WriteAsJsonAsync<ApproachResponse>(approachResponse).ConfigureAwait(false);

@@ -182,7 +182,7 @@ static async ValueTask CreateSearchIndexAsync(AppOptions options)
         {
             new SimpleField("id", SearchFieldDataType.String) { IsKey = true },
             new SearchableField("content") { AnalyzerName = "en.microsoft" },
-            new SimpleField("category", SearchFieldDataType.String) { IsFacetable = true },
+            new SimpleField("category", SearchFieldDataType.String) { IsFacetable = true, IsFilterable = true  },
             new SimpleField("sourcepage", SearchFieldDataType.String) { IsFacetable = true },
             new SimpleField("sourcefile", SearchFieldDataType.String) { IsFacetable = true }
         },

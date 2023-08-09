@@ -12,12 +12,12 @@ internal sealed class RetrieveThenReadApproachService : IApproachBasedService
         _logger = loggerFactory.CreateLogger<RetrieveThenReadApproachService>();
         _searchClient = searchClient;
 
-        _kernel  = SemanticKernelFactory.GetKernel<RetrieveThenReadApproachService>(_logger, CompletionTypes.Text); 
+        _kernel  = SemanticKernelFactory.GetKernel<RetrieveThenReadApproachService>(_logger); 
         // var builder = new KernelBuilder();
         // builder.WithAzureTextCompletionService(AppSettings.AzureOpenAiGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, AppSettings.AzureOpenAiKey);
         // _kernel = builder.Build();
 
-        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "..", "..", "plugins");
+        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Plugins");
     }
 
     public Approach Approach => Approach.RetrieveThenRead;
@@ -26,11 +26,14 @@ internal sealed class RetrieveThenReadApproachService : IApproachBasedService
     {
         _kernel.ImportSemanticSkillFromDirectory(_pluginsDirectory, "RetrieveThenReadPlugin");
         var retrieveRelatedDocumentsPlugin = _kernel.ImportSkill(new RetrieveRelatedDocumentsPlugin(_searchClient, overrides), "RetrieveRelatedDocumentsPlugin");
-        var text = await retrieveRelatedDocumentsPlugin["QueryAsync"].InvokeAsync(question, cancellationToken);
 
-        var context = _kernel.CreateNewContext(cancellationToken);
-        context["retrieve"] = text.Result;
-        context["question"] = question;
+        var queryContext = _kernel.CreateNewContext();
+        queryContext.Variables["question"] = question;
+        var text = await retrieveRelatedDocumentsPlugin["QueryAsync"].InvokeAsync(queryContext, cancellationToken: CancellationToken.None);
+
+        var context = _kernel.CreateNewContext();
+        context.Variables["retrieve"] = text.Result;
+        context.Variables["question"] = question;
 
         var getAnswer = _kernel.Skills.GetFunction("RetrieveThenReadPlugin", "AnswerGenerator");
         var answer = await getAnswer.InvokeAsync(context);

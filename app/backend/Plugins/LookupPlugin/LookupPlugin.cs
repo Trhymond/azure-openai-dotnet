@@ -12,7 +12,7 @@ public sealed class LookupPlugin
         _requestOverrides = requestOverrides;
     }
 
-    [SKFunction, Description("Query Azure Cognitive Search")]
+    [SKFunction, Description("Lookup Azure Cognitive Search"), SKName("LookupAsync")]
     public async Task<string> LookupAsync(string lookupQuery, SKContext context)
     {
         if (lookupQuery is string query)

@@ -27,8 +27,8 @@ public static class AppSettings
     public static string AzureCosmosEndpoint =>
         Environment.GetEnvironmentVariable("AzureCosmosEndpoint") ?? throw new ArgumentNullException(nameof(AzureCosmosEndpoint));
 
-    public static string AzureFormRecognizerServiceEndpoint =>
-        Environment.GetEnvironmentVariable("AzureFormRecognizerServiceEndpoint") ?? throw new ArgumentNullException(nameof(AzureFormRecognizerServiceEndpoint));
+    //public static string AzureFormRecognizerServiceEndpoint =>
+    //    Environment.GetEnvironmentVariable("AzureFormRecognizerServiceEndpoint") ?? throw new ArgumentNullException(nameof(AzureFormRecognizerServiceEndpoint));
 
     public static string CitationBaseUrl =>
         new UriBuilder(AzureStorageAccountEndpoint) { Path = AzureStorageContainer }.Uri.AbsoluteUri;

@@ -34,7 +34,7 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<DocumentAnalysisClient>(sp =>
         {
             var documentAnalysisClient = new DocumentAnalysisClient(
-                new Uri(AppSettings.AzureFormRecognizerServiceEndpoint), _azureCredential);
+                new Uri(AppSettings.AzureOpenAiServiceEndpoint), _azureCredential);
             return documentAnalysisClient;
         });
 

@@ -16,12 +16,9 @@ internal sealed class ReadRetrieveReadApproachService : IApproachBasedService
     {
         _logger = loggerFactory.CreateLogger<ReadRetrieveReadApproachService>();
         _searchClient = searchClient;
-        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "..", "..", "plugins");
+        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Plugins");
 
-        _kernel  = SemanticKernelFactory.GetKernel<ReadRetrieveReadApproachService>(_logger, CompletionTypes.Text); 
-        // var builder = new KernelBuilder();
-        // builder.WithAzureTextCompletionService(AppSettings.AzureOpenAiGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, AppSettings.AzureOpenAiKey);
-        // _kernel = builder.Build();
+        _kernel  = SemanticKernelFactory.GetKernel<ReadRetrieveReadApproachService>(_logger); 
     }
 
     public Approach Approach => Approach.ReadRetrieveRead;
@@ -30,10 +27,11 @@ internal sealed class ReadRetrieveReadApproachService : IApproachBasedService
     {
         _kernel.ImportSemanticSkillFromDirectory(_pluginsDirectory, "ReadRetrieveReadPlugin");
         _kernel.ImportSkill(new RetrieveRelatedDocumentsPlugin(_searchClient, overrides), "RetrieveRelatedDocumentsPlugin");
+        _kernel.ImportSkill(new UpdateContextVariablePlugin(), "UpdateContextVariablePlugin");        
 
         var planner = new SequentialPlanner(_kernel, new SequentialPlannerConfig
         {
-            RelevancyThreshold = 0.7,
+            RelevancyThreshold = 0.7             
         });
 
         var plan = await planner.CreatePlanAsync(PlanPrompt);
@@ -46,11 +44,10 @@ internal sealed class ReadRetrieveReadApproachService : IApproachBasedService
          _logger.LogInformation("{Plan}", PlanToString(plan));
 
          do {
-            plan = await _kernel.StepAsync(plan, cancellationToken: cancellationToken);  
+            plan = await _kernel.StepAsync(plan);            
             sb.AppendLine($"Step {step++} - Execution results:\n");
             sb.AppendLine(plan.State + "\n");
-
-         } while (plan.HasNextStep);
+        } while (plan.HasNextStep);
 
         return new ApproachResponse(
             DataPoints: plan.State["knowledge"].ToString().Split('\r'),

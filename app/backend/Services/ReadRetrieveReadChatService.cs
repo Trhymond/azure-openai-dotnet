@@ -19,55 +19,53 @@ public sealed class ReadRetrieveReadChatService
         _logger = loggerFactory.CreateLogger<ReadRetrieveReadChatService>();
         _searchClient = searchClient;
 
-        _kernel = SemanticKernelFactory.GetKernel<ReadRetrieveReadChatService>(_logger, CompletionTypes.Chat, memoryStore);
+        _kernel = SemanticKernelFactory.GetKernel<ReadRetrieveReadChatService>(_logger, memoryStore);
 
-        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "..", "..", "plugins");
+        _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Plugins");
     }
 
-    public async Task<ChatResponse> ReplyAsync(ChatTurn[] history,
-                            RequestOverrides? overrides,
-                            CancellationToken cancellationToken = default)
+    public async Task<ChatResponse> ReplyAsync(ChatTurn[] history, RequestOverrides? overrides)
     {
         _kernel.ImportSemanticSkillFromDirectory(_pluginsDirectory, "ChatPlugin");
         _kernel.ImportSkill(new RetrieveRelatedDocumentsPlugin(_searchClient, overrides), "RetrieveRelatedDocumentsPlugin");
 
         var chatPlugin = _kernel.ImportSkill(new ChatPlugin(_kernel), "ChatPlugin");
 
-        var context = _kernel.CreateNewContext(cancellationToken);
-        context["chat_history"] = history.GetChatHistoryAsText(includeLastTurn: true);
-        context["question"] = (history.LastOrDefault()?.User is { } userQuestion)
+        var context = _kernel.CreateNewContext();
+        context.Variables["chat_history"] = history.GetChatHistoryAsText(includeLastTurn: true);
+        context.Variables["question"] = (history.LastOrDefault()?.User is { } userQuestion)
         ? userQuestion
         : throw new InvalidOperationException("User question is null");
 
-        context["follow_up_questions_prompt"] = (overrides?.SuggestFollowupQuestions is true) ? FollowUpQuestionsPrompt : string.Empty;
+        context.Variables["follow_up_questions_prompt"] = (overrides?.SuggestFollowupQuestions is true) ? FollowUpQuestionsPrompt : string.Empty;
 
         var prompt = "";
         if (overrides is null or { PromptTemplate: null })
         {
-            context["injected_prompt"] = string.Empty;
+            context.Variables["injected_prompt"] = string.Empty;
             prompt = FollowUpQuestionsPrompt;
         }
         else if (overrides is not null && overrides.PromptTemplate.StartsWith(">>>"))
         {
-            context["injected_prompt"] = overrides.PromptTemplate[3..];
+            context.Variables["injected_prompt"] = overrides.PromptTemplate[3..];
         }
         else if (overrides?.PromptTemplate is string promptTemplate)
         {
-            context["injected_prompt"] = promptTemplate;
+            context.Variables["injected_prompt"] = promptTemplate;
             prompt = promptTemplate;
         }
 
         // string query, string data, string answer)
-        SKContext result = await chatPlugin["Reply"].InvokeAsync(context);
+        SKContext result = await chatPlugin["ReplyAsync"].InvokeAsync(context);
 
-        var promptContext = _kernel.CreateNewContext(cancellationToken);
-        promptContext["input"] = prompt;
+        var promptContext = _kernel.CreateNewContext();
+        promptContext.Variables["input"] = prompt;
         prompt = await _kernel.PromptTemplateEngine.RenderAsync(FollowUpQuestionsPrompt, promptContext);
 
         return new ChatResponse(
-                    DataPoints: result["data"].Split('\r'),
-                    Answer: result["answer"],
-                    Thoughts: $"Searched for:<br>{result["query"]}<br><br>Prompt:<br>{result["prompt"].Replace("\n", "<br>")}",
+                    DataPoints: result.Variables["data"].Split('\r'),
+                    Answer: result.Variables["answer"],
+                    Thoughts: $"Searched for:<br>{result.Variables["query"]}<br><br>Prompt:<br>{prompt.Replace("\n", "<br>")}",
                     CitationBaseUrl: AppSettings.CitationBaseUrl);
     }
 }

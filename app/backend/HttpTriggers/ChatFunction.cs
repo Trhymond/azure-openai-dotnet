@@ -1,4 +1,6 @@
 
+
+
 namespace Rhymond.OpenAI.HttpTriggers
 {
     public class ChatFunction
@@ -18,11 +20,9 @@ namespace Rhymond.OpenAI.HttpTriggers
         {
             _logger.LogInformation("OpenAI Chat function");
 
-            var cancellationToken = new CancellationToken();
-            var chatRequest = await req.ReadFromJsonAsync<ChatRequest>();
+            var chatRequest = req.ReadFromJson<ChatRequest>();
             if (chatRequest is { History.Length: > 0 }) {
-                var chatResponse = await _chatService.ReplyAsync(
-                    chatRequest.History, chatRequest.Overrides, cancellationToken);
+                var chatResponse = await _chatService.ReplyAsync(chatRequest.History, chatRequest.Overrides);
 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 await response.WriteAsJsonAsync<ChatResponse>(chatResponse).ConfigureAwait(false);

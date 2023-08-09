@@ -30,6 +30,7 @@ resource search 'Microsoft.Search/searchServices@2022-09-01' = {
     partitionCount: 1
     publicNetworkAccess: 'enabled'
     replicaCount: 1
+
   }
 
   identity: {
