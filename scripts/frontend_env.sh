@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #file_name=$(find ./app/frontend/dist  -name 'index*.js')
-file_name="../app/frontend/.env.production"
+file_name=".env.production"
 backend_url="$1"
 api_key="$2"
 

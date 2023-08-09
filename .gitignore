@@ -3,7 +3,7 @@
 .env*
 **/bin/*
 **/obj/*
-**/DevelopmentStorage/*
-**/node_modules/*
+DevelopmentStorage
+node_modules
 package-lock.json
 **/dist/*

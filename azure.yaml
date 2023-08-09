@@ -17,7 +17,7 @@ services:
       prepackage:
         posix:
           shell: sh
-          run: dotnet build
+          run: dotnet build backend.csproj --configuration Release
           interactive: true
           continueOnError: false
 
