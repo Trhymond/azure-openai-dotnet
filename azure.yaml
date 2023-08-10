@@ -61,7 +61,7 @@ hooks:
       interactive: true
       continueOnError: false
 
-  postinfracreate:
+  postdeploy:
     posix:
       shell: sh
       run: ./scripts/enable_semantic_search.sh

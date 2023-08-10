@@ -28,7 +28,6 @@ resource keyvault 'Microsoft.KeyVault/vaults@2022-07-01' = {
     //   defaultAction: 'Deny'
     // }
     publicNetworkAccess: 'enabled'
-    // enableRbacAuthorization: true
     accessPolicies: [
       {
         objectId: servicePrincipalObjectId
