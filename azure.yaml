@@ -2,7 +2,8 @@
 
 name: azure-openai-dotnet
 metadata:
-  template: azure-openai-dotnet@0.0.1
+  template: azure-openai-dotnet@0.0.1-beta
+
 infra:
   provider: bicep
   path: infra
@@ -57,6 +58,13 @@ hooks:
     posix:
       shell: sh
       run: ./scripts/prepdoc.sh
+      interactive: true
+      continueOnError: false
+
+  postinfracreate:
+    posix:
+      shell: sh
+      run: ./scripts/enable_semantic_search.sh
       interactive: true
       continueOnError: false
 

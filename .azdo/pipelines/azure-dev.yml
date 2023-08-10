@@ -1,11 +1,5 @@
-# Run when commits are pushed to mainline branch (main or master)
-# Set this to the mainline branch you are using
 trigger:
   - main
-  - master
-
-# Azure Pipelines workflow to deploy to Azure using azd
-# To configure required secrets for connecting to Azure, simply run `azd pipeline config --provider azdo`
 
 pool:
   vmImage: ubuntu-latest
@@ -30,7 +24,7 @@ steps:
       AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
       AZURE_ENV_NAME: $(AZURE_ENV_NAME)
       AZURE_LOCATION: $(AZURE_LOCATION)
-      
+
   - task: AzureCLI@2
     displayName: Deploy Application
     inputs:

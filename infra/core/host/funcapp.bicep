@@ -17,19 +17,14 @@ param runtimeName string
 param runtimeVersion string
 param alwaysOn bool = false
 param use32BitWorkerProcess bool = false
-// param appCommandLine string = ''
-// param clientAffinityEnabled bool = false
-// param enableOryxBuild bool = contains(kind, 'linux')
-// param scmDoBuildDuringDeployment bool = false
 param numberOfWorkers int = 1
 param minimumElasticInstanceCount int = 0
-// param healthCheckPath string = ''
 
 var hostingPlanNameVar = empty(hostingPlanName) ? replace(name, 'func-', 'func-plan-') : hostingPlanName
 var runtimeNameAndVersion = '${toUpper(runtimeName)}|${runtimeVersion}'
 var scmDoBuildDuringDeployment = contains(kind, 'linux') ? true : false
 var enableOryxBuild = contains(kind, 'linux') ? true : false
-var websiteRunFromPackage = contains(kind, 'linux') ? 0 : 1
+var websiteRunFromPackage = contains(kind, 'linux') ? 1 : 0
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = if (!empty(storageAccountName)) {
   name: storageAccountName
@@ -99,10 +94,10 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
             name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
             value: applicationInsights.properties.ConnectionString
           }
-          {
-            name: 'AzureWebJobsFeatureFlags'
-            value: 'EnableWorkerIndexing'
-          }
+          // {
+          //   name: 'AzureWebJobsFeatureFlags'
+          //   value: 'EnableWorkerIndexing'
+          // }
           {
             name: 'AzureWebJobsStorage'
             value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
@@ -135,10 +130,10 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
             name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
             value: string(scmDoBuildDuringDeployment)
           }
-          {
-            name: 'WEBSITE_RUN_FROM_PACKAGE'
-            value: string(websiteRunFromPackage)
-          }
+          // {
+          //   name: 'WEBSITE_RUN_FROM_PACKAGE'
+          //   value: string(websiteRunFromPackage)
+          // }
         ])
     }
     httpsOnly: true
