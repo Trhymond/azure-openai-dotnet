@@ -12,6 +12,13 @@ internal static class ObjectExtensions
 
         return result;
     }
+
+    internal static string? WriteToJson<T>(this T data)
+    {
+        string result = JsonConvert.SerializeObject(data);
+
+        return result;
+    }
 }
 
 

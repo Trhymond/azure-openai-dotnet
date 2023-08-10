@@ -78,10 +78,11 @@ public sealed class ReadRetrieveReadChatService
         promptContext.Variables["input"] = prompt;
         prompt = await _kernel.PromptTemplateEngine.RenderAsync(FollowUpQuestionsPrompt, promptContext);
 
-        return new ChatResponse(
-                    DataPoints: (documents ?? "").Split('\r'),
-                    Answer: answer,
-                    Thoughts: $"Searched for:<br>{query}<br><br>Prompt:<br>{prompt.Replace("\n", "<br>")}",
-                    CitationBaseUrl: AppSettings.CitationBaseUrl);
+        return new ChatResponse {
+                DataPoints = (documents ?? "").Split('\r'),
+                Answer = answer,
+                Thoughts = $"Searched for:<br>{query}<br><br>Prompt:<br>{prompt.Replace("\n", "<br>")}",
+                CitationBaseUrl = AppSettings.CitationBaseUrl
+        };
     }
 }

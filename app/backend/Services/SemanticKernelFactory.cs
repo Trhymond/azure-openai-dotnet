@@ -18,9 +18,9 @@ public class SemanticKernelFactory
         var builder = Kernel.Builder
             .WithLogger(logger)
             .WithConfiguration(config)
-            .WithAzureChatCompletionService(AppSettings.AzureOpenAiGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, _azureCredential, true)
-            .WithAzureTextEmbeddingGenerationService(AppSettings.AzureOpenAiEmbeddingDeployment, AppSettings.AzureOpenAiServiceEndpoint, _azureCredential)
-            .WithMemoryStorage(memoryStore);
+            .WithAzureChatCompletionService(AppSettings.AzureOpenAiGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, _azureCredential, true);
+            //.WithAzureTextEmbeddingGenerationService(AppSettings.AzureOpenAiEmbeddingDeployment, AppSettings.AzureOpenAiServiceEndpoint, _azureCredential)
+            //.WithMemoryStorage(memoryStore);
 
         var kernel = builder.Build();
         return kernel;

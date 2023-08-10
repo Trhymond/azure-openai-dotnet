@@ -22,11 +22,18 @@ export type AskRequest = {
     overrides?: AskRequestOverrides;
 };
 
+// export type AskResponse = {
+//     answer: string;
+//     thoughts: string | null;
+//     data_points: string[];
+//     error?: string;
+// };
+
 export type AskResponse = {
-    answer: string;
-    thoughts: string | null;
-    data_points: string[];
-    error?: string;
+    Answer: string;
+    Thoughts: string | null;
+    DataPoints: string[];
+    Error?: string;
 };
 
 export type ChatTurn = {

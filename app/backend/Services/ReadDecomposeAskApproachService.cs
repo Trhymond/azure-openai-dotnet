@@ -22,11 +22,11 @@ internal sealed class ReadDecomposeAskApproachService : IApproachBasedService
         _searchClient = searchClient;
         _pluginsDirectory = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Plugins");
 
-        _kernel  = SemanticKernelFactory.GetKernel<ReadDecomposeAskApproachService>(_logger); 
+        _kernel = SemanticKernelFactory.GetKernel<ReadDecomposeAskApproachService>(_logger);
         // var builder = new KernelBuilder();
         // builder.WithAzureTextCompletionService(AppSettings.AzureOpenAiGptDeployment, AppSettings.AzureOpenAiServiceEndpoint, AppSettings.AzureOpenAiKey);
         // _kernel = builder.Build();
-  
+
     }
 
     public Approach Approach => Approach.ReadDecomposeAsk;
@@ -46,22 +46,24 @@ internal sealed class ReadDecomposeAskApproachService : IApproachBasedService
         plan.State["question"] = question;
 
         var sb = new StringBuilder();
-        var step  = 1;
+        var step = 1;
 
-         _logger.LogInformation("{Plan}", PlanToString(plan));
+        _logger.LogInformation("{Plan}", PlanToString(plan));
 
-         do {
-            plan = await _kernel.StepAsync(question, plan, cancellationToken: cancellationToken);  
+        do
+        {
+            plan = await _kernel.StepAsync(question, plan, cancellationToken: cancellationToken);
             sb.AppendLine($"Step {step++} - Execution results:\n");
             sb.AppendLine(plan.State + "\n");
 
-         } while (plan.HasNextStep);
+        } while (plan.HasNextStep);
 
-        return new ApproachResponse(
-            DataPoints: plan.State["knowledge"].ToString().Split('\r'),
-            Answer: plan.State["Answer"],
-            Thoughts: plan.State["SUMMARY"].Replace("\n", "<br>"),
-            CitationBaseUrl: AppSettings.CitationBaseUrl);
+        return new ApproachResponse {
+            DataPoints = plan.State["knowledge"].ToString().Split('\r'),
+            Answer = plan.State["Answer"],
+            Thoughts = plan.State["SUMMARY"].Replace("\n", "<br>"),
+            CitationBaseUrl = AppSettings.CitationBaseUrl
+        };
 
     }
 

@@ -14,14 +14,14 @@ public record class ApproachResponse
     public required string Answer { get; set; }
 
     [JsonProperty("thoughts")]
-    public Approach Thoughts { get; set; }
+    public string? Thoughts { get; set; }
 
     [JsonProperty("data_points")]
-    public string[] DataPoints { get; set; }
+    public string[]? DataPoints { get; set; }
 
     [JsonProperty("citation_base_url")]
-    public string CitationBaseUrl { get; set; }
+    public string? CitationBaseUrl { get; set; }
 
     [JsonProperty("error")]
-    string? error { get; set; } = ""
+    public string? Error { get; set; }
 }

@@ -49,11 +49,12 @@ internal sealed class ReadRetrieveReadApproachService : IApproachBasedService
             sb.AppendLine(plan.State + "\n");
         } while (plan.HasNextStep);
 
-        return new ApproachResponse(
-            DataPoints: plan.State["knowledge"].ToString().Split('\r'),
-            Answer: plan.State["answer"],
-            Thoughts: sb.ToString().Replace("\n", "<br>"),
-            CitationBaseUrl: AppSettings.CitationBaseUrl);
+        return new ApproachResponse {
+            DataPoints = plan.State["knowledge"].ToString().Split('\r'),
+            Answer = plan.State["answer"],
+            Thoughts = sb.ToString().Replace("\n", "<br>"),
+            CitationBaseUrl = AppSettings.CitationBaseUrl
+        };
     }
 
     private static string PlanToString(Plan originalPlan)

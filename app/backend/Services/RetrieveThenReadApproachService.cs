@@ -39,11 +39,12 @@ internal sealed class RetrieveThenReadApproachService : IApproachBasedService
         var answer = await getAnswer.InvokeAsync(context);
         // string asnwer = context["input"].Trim();
 
-        return new ApproachResponse(
-            DataPoints: text.Result.Split('\r'),
-            Answer: answer.Result.ToString(),
-            Thoughts: $"Question: {question} \r Prompt: {context.Variables}",
-            CitationBaseUrl: AppSettings.CitationBaseUrl);
+        return new ApproachResponse {
+            DataPoints = text.Result.Split('\r'),
+            Answer = answer.Result.ToString(),
+            Thoughts = $"Question: {question} \r Prompt: {context.Variables}",
+            CitationBaseUrl = AppSettings.CitationBaseUrl
+        };
 
     }
 }

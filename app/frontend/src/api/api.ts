@@ -26,10 +26,13 @@ export async function askApi(options: AskRequest): Promise<AskResponse> {
         })
     });
 
+    console.log("RHYMOND =>", response);
+    
     const parsedResponse: AskResponse = await response.json();
+    console.log("RHYMOND =>", parsedResponse);
 
     if (response.status > 299 || !response.ok) {
-        throw Error(parsedResponse.error || "Unknown error");
+        throw Error(parsedResponse.Error || "Unknown error");
     }
 
     return parsedResponse;
@@ -67,7 +70,7 @@ export async function chatApi(options: ChatRequest): Promise<AskResponse> {
     console.log("RHYMOND:", parsedResponse);
 
     if (response.status > 299 || !response.ok) {
-        throw Error(parsedResponse.error || "Unknown error");
+        throw Error(parsedResponse.Error || "Unknown error");
     }
 
     return parsedResponse;

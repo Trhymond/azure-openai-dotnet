@@ -44,7 +44,7 @@ const Chat = () => {
         setActiveAnalysisPanelTab(undefined);
 
         try {
-            const history: ChatTurn[] = answers.map(a => ({ user: a[0], bot: a[1].answer }));
+            const history: ChatTurn[] = answers.map(a => ({ user: a[0], bot: a[1].Answer }));
             const request: ChatRequest = {
                 history: [...history, { user: question, bot: undefined }],
                 approach: Approaches.ReadRetrieveRead,
