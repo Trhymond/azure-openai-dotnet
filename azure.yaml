@@ -31,13 +31,6 @@ services:
       prepackage:
         posix:
           shell: sh
-          run: npm install; npm run build
-          interactive: true
-          continueOnError: false
-
-      predeploy:
-        posix:
-          shell: sh
           run: ../../scripts/frontend_env.sh ${BACKEND_URI} ${BACKEND_KEY}
           interactive: true
           continueOnError: false
