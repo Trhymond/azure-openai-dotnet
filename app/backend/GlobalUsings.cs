@@ -28,6 +28,7 @@ global using Microsoft.SemanticKernel.Planning.Sequential;
 global using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Configuration;
+global using Microsoft.Azure.Cosmos;
 //global using System.Text.Json.Serialization;
 global using Newtonsoft.Json;
 global using System.Runtime.Serialization;

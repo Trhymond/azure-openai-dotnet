@@ -26,46 +26,62 @@ public sealed class ReadRetrieveReadChatService
 
     public async Task<ChatResponse> ReplyAsync(ChatTurn[] history, RequestOverrides? overrides)
     {
-        _kernel.ImportSemanticSkillFromDirectory(_pluginsDirectory, "ChatPlugin");
-        _kernel.ImportSkill(new RetrieveRelatedDocumentsPlugin(_searchClient, overrides), "RetrieveRelatedDocumentsPlugin");
+        var charPlugin = _kernel.ImportSemanticSkillFromDirectory(_pluginsDirectory, "ChatPlugin");
+        var retrieveRelatedDocumentsPlugin = _kernel.ImportSkill(new RetrieveRelatedDocumentsPlugin(_searchClient, overrides), "RetrieveRelatedDocumentsPlugin");
 
-        var chatPlugin = _kernel.ImportSkill(new ChatPlugin(_kernel), "ChatPlugin");
-
-        var context = _kernel.CreateNewContext();
-        context.Variables["chat_history"] = history.GetChatHistoryAsText(includeLastTurn: true);
-        context.Variables["question"] = (history.LastOrDefault()?.User is { } userQuestion)
-        ? userQuestion
-        : throw new InvalidOperationException("User question is null");
-
-        context.Variables["follow_up_questions_prompt"] = (overrides?.SuggestFollowupQuestions is true) ? FollowUpQuestionsPrompt : string.Empty;
-
+        var chatHistory = history.GetChatHistoryAsText(includeLastTurn: true);
+        var question = (history.LastOrDefault()?.User is { } userQuestion)
+            ? userQuestion
+            : throw new InvalidOperationException("User question is null");
         var prompt = "";
+        var injectedPrompt = "";
         if (overrides is null or { PromptTemplate: null })
         {
-            context.Variables["injected_prompt"] = string.Empty;
+            injectedPrompt = string.Empty;
             prompt = FollowUpQuestionsPrompt;
         }
         else if (overrides is not null && overrides.PromptTemplate.StartsWith(">>>"))
         {
-            context.Variables["injected_prompt"] = overrides.PromptTemplate[3..];
+            injectedPrompt= overrides.PromptTemplate[3..];
         }
         else if (overrides?.PromptTemplate is string promptTemplate)
         {
-            context.Variables["injected_prompt"] = promptTemplate;
+            injectedPrompt = promptTemplate;
             prompt = promptTemplate;
         }
 
-        // string query, string data, string answer)
-        SKContext result = await chatPlugin["ReplyAsync"].InvokeAsync(context);
+        // step 1
+        // use llm to get query
+        var queryContext = _kernel.CreateNewContext();
+        queryContext.Variables["chat_history"] = chatHistory;
+        queryContext.Variables["question"] = question;
+        var queryResult = await charPlugin["QueryGenerator"].InvokeAsync(queryContext);
+        var query = queryResult.Variables["input"];
+
+        // step 2
+        // use query to search related docs
+        var documentsResult = await retrieveRelatedDocumentsPlugin["QueryAsync"].InvokeAsync(query);
+        var documents = documentsResult.Variables["input"];
+
+        // step 3
+        // use llm to get answer
+        var answerContext = _kernel.CreateNewContext();
+        answerContext.Variables["follow_up_questions_prompt"] =  (overrides?.SuggestFollowupQuestions is true) ? FollowUpQuestionsPrompt : string.Empty;
+        answerContext.Variables["injected_prompt"] = injectedPrompt ?? "";
+        answerContext.Variables["sources"] = documents ?? "";
+        answerContext.Variables["chat_history"] = chatHistory ?? "";
+        answerContext.Variables["question"] = query;
+        var answerResult = await charPlugin["AnswerPromptGenerator"].InvokeAsync(answerContext);
+        var answer = answerResult.Variables["input"];
 
         var promptContext = _kernel.CreateNewContext();
         promptContext.Variables["input"] = prompt;
         prompt = await _kernel.PromptTemplateEngine.RenderAsync(FollowUpQuestionsPrompt, promptContext);
 
         return new ChatResponse(
-                    DataPoints: result.Variables["data"].Split('\r'),
-                    Answer: result.Variables["answer"],
-                    Thoughts: $"Searched for:<br>{result.Variables["query"]}<br><br>Prompt:<br>{prompt.Replace("\n", "<br>")}",
+                    DataPoints: (documents ?? "").Split('\r'),
+                    Answer: answer,
+                    Thoughts: $"Searched for:<br>{query}<br><br>Prompt:<br>{prompt.Replace("\n", "<br>")}",
                     CitationBaseUrl: AppSettings.CitationBaseUrl);
     }
 }

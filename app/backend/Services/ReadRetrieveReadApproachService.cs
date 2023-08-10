@@ -34,7 +34,7 @@ internal sealed class ReadRetrieveReadApproachService : IApproachBasedService
             RelevancyThreshold = 0.7             
         });
 
-        var plan = await planner.CreatePlanAsync(PlanPrompt);
+        var plan = await planner.CreatePlanAsync(PlanPrompt, CancellationToken.None);
         plan.State["question"] = question;
         plan.State["knowledge"] = string.Empty;
 
@@ -44,7 +44,7 @@ internal sealed class ReadRetrieveReadApproachService : IApproachBasedService
          _logger.LogInformation("{Plan}", PlanToString(plan));
 
          do {
-            plan = await _kernel.StepAsync(plan);            
+            plan = await _kernel.StepAsync(plan, CancellationToken.None);            
             sb.AppendLine($"Step {step++} - Execution results:\n");
             sb.AppendLine(plan.State + "\n");
         } while (plan.HasNextStep);

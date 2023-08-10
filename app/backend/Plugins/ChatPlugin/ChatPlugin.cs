@@ -12,60 +12,39 @@ public sealed class ChatPlugin {
     [SKFunction, Description("Reply to users chat"), SKName("ReplyAsync")]
     public async Task<SKContext> ReplyAsync(SKContext context)
     {
-        // step 1
-        // use llm to get query
         var question = context.Variables["question"];
         var chatHistory = context.Variables["chat_history"];
-        var query = await GetQuery(question, chatHistory);
+        var followUpQuestionsPrompt = context.Variables["follow_up_questions_prompt"];
+        var injectedPrompt = context.Variables["injected_prompt"];
+
+        // step 1
+        // use llm to get query
+        var queryContext = _kernel.CreateNewContext();
+        queryContext.Variables["query"] = question;
+        queryContext.Variables["chat_history"] = chatHistory;
+        var queryResult = await _kernel.Skills.GetFunction("ChatPlugin", "QueryGenerator").InvokeAsync(queryContext);
+        var query =  queryResult.Variables["input"];
        
         // step 2
         // use query to search related docs
-        var additionalData = await GetAdditionalData(query);
+        var documentResult = await _kernel.Skills.GetFunction("RetrieveRelatedDocumentsPlugin", "QueryAsync").InvokeAsync(query);
+        var documents =  documentResult.Variables["input"];
         
         // step 3
         // use llm to get answer
-        var followUpQuestionsPrompt = context.Variables["follow_up_questions_prompt"];
-        var injectedPrompt = context.Variables["injected_prompt"];
-        var answer = await GetAnswer(query, chatHistory, additionalData, followUpQuestionsPrompt, injectedPrompt);
-
+        var answerContext = _kernel.CreateNewContext();
+        answerContext.Variables["follow_up_questions_prompt"] =  followUpQuestionsPrompt ?? "";
+        answerContext.Variables["injected_prompt"] = injectedPrompt ?? "";
+        answerContext.Variables["sources"] = documents ?? "";
+        answerContext.Variables["chat_history"] = chatHistory ?? "";
+        answerContext.Variables["question"] = query;
+        var answerResult = await _kernel.Skills.GetFunction("ChatPlugin", "AnswerPromptGenerator").InvokeAsync(answerContext);
+        
+        // Reeturn context
         context.Variables["query"] = query;
-        context.Variables["answer"] = answer;
-        context.Variables["data"] = additionalData;
+        context.Variables["answer"] = answerResult.Variables["input"];
+        context.Variables["data"] = documents ?? "";
         
         return context;
-    }
-
-    private async Task<string> GetQuery(string question, string chatHistory) {
-        var context = _kernel.CreateNewContext();
-        context.Variables["query"] = question;
-        context.Variables["chat_history"] = chatHistory;
-       
-        var getQuery = _kernel.Skills.GetFunction("ChatPlugin", "QueryGenerator");
-        SKContext results = await getQuery.InvokeAsync(context);
-        Console.WriteLine("results = " + results);
-
-        return results.Variables["input"];
-    }
-
-    private async Task<string> GetAdditionalData(string question) {
-
-        var queryDocuments = _kernel.Skills.GetFunction("RetrieveRelatedDocumentsPlugin", "QueryAsync");
-
-        SKContext results = await queryDocuments.InvokeAsync(question);
-        return results.Variables["input"];
-    }
-
-    private async Task<string> GetAnswer(string query, string? chatHistory, string? additionalData, 
-        string? followUpQuestionsPrompt, string? injectedPrompt) {
-        var context = _kernel.CreateNewContext();
-        context.Variables["follow_up_questions_prompt"] =  followUpQuestionsPrompt ?? "";
-        context.Variables["injected_prompt"] = injectedPrompt ?? "";
-        context.Variables["sources"] = additionalData ?? "";
-        context.Variables["chat_history"] = chatHistory ?? "";
-        context.Variables["question"] = query;
-
-        var getResponse = _kernel.Skills.GetFunction("ChatPlugin", "AnswerPromptGenerator");
-        SKContext results = await getResponse.InvokeAsync(context);
-        return results.Variables["input"];
     }
 }

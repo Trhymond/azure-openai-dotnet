@@ -46,6 +46,14 @@ internal static class ServiceCollectionExtensions
             return openAIClient;
         });
 
+        services.AddSingleton<CosmosClient>(sp =>
+        {
+            var cosmosClient = new CosmosClient(
+                AppSettings.AzureCosmosEndpoint, _azureCredential);
+
+            return cosmosClient;
+        });
+
         services.AddSingleton<IApproachBasedService, RetrieveThenReadApproachService>();
         services.AddSingleton<IApproachBasedService, ReadRetrieveReadApproachService>();
         services.AddSingleton<IApproachBasedService, ReadDecomposeAskApproachService>();
